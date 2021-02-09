@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Simpleverse.Dapper.SqlServer.Merge
 	public static class MergeExtensions
 	{
 		public async static Task<int> UpsertAsync<T>(
-			this SqlConnection connection,
+			this IDbConnection connection,
 			T entitiesToUpsert,
 			SqlTransaction transaction = null,
 			int? commandTimeout = null
@@ -36,7 +37,7 @@ namespace Simpleverse.Dapper.SqlServer.Merge
 		}
 
 		public async static Task<int> MergeAsync<T>(
-			this SqlConnection connection,
+			this IDbConnection connection,
 			T entitiesToMerge,
 			SqlTransaction transaction = null,
 			int? commandTimeout = null,
