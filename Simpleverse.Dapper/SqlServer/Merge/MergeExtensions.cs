@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -59,7 +59,7 @@ namespace Simpleverse.Dapper.SqlServer.Merge
 				USING
 				(
 					VALUES({typeMeta.PropertiesExceptKeyAndComputed.ParameterList()})
-				)
+				)  AS Source
 				ON ({typeMeta.PropertiesKeyAndExplicit.ColumnListEquals(" AND ")})"
 			);
 
