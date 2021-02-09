@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 using Simpleverse.Dapper.SqlServer.Merge;
 
@@ -16,13 +17,36 @@ namespace Simpleverse.Dapper.Test.SqlServer.Merge
 		}
 
 		[Fact]
-		public void UpsertAsyncTest()
+		public async Task UpsertAsyncTest()
 		{
 			using (var connection = fixture.GetConnection())
 			{
-				// arange
+				// arrange
 				connection.Open();
-				connection.DeleteAll<ExplicitKey>();
+				await connection.DeleteAllAsync<ExplicitKey>();
+				var record = TestData.ExplicitKeyData(1).Single();
+				connection.Insert(record);
+				record.Name = "Updated";
+
+				// act
+				await connection.UpsertAsync(record);
+
+				// assert
+				var updatedRecord = connection.Get<ExplicitKey>(1);
+				Assert.NotNull(updatedRecord);
+				Assert.Equal("Updated", updatedRecord.Name);
+				Assert.Equal(record.Name, updatedRecord.Name);
+			}
+		}
+
+		[Fact]
+		public async Task UpsertBulkAsyncTest()
+		{
+			using (var connection = fixture.GetConnection())
+			{
+				// arrange
+				connection.Open();
+				await connection.DeleteAllAsync<ExplicitKey>();
 				var records = TestData.ExplicitKeyData(10);
 				var inserted = connection.Insert(records);
 				records = records.Skip(1);
@@ -32,7 +56,7 @@ namespace Simpleverse.Dapper.Test.SqlServer.Merge
 				}
 
 				// act
-				var updated = connection.UpsertBulkAsync(records).Result;
+				var updated = await connection.UpsertBulkAsync(records);
 
 				// assert
 				var updatedRecords = connection.GetAll<ExplicitKey>();
